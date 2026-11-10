@@ -44,6 +44,18 @@ Every blocking concern is tagged with the lens that found it and a line saying h
 
 Rules 1 and 3 pull against each other — a log line is code, and logging everything is avoidable complexity. The skill resolves it with one test: **log the rules, not the plumbing.** The lines you would write as business rules in a `diffluent-explain` comparison are exactly the lines worth logging.
 
+
+```mermaid
+flowchart LR
+  A1["Internal-only error<br/>would leak into the interface"] --> B1["Translate it<br/>never swallow, still log"]
+  A2["Five decisions<br/>in one unit of work"] --> B2["One event, five fields<br/>not five log lines"]
+  A3["An error crosses<br/>several layers"] --> B3["Log where first detected<br/>once, not as it rises"]
+  A4["Two secrets that<br/>always change together"] --> B4["One secret, one module<br/>no seam, no change"]
+  A5["Anything else"] --> B5["Cost you, save the reader<br/>never hide a failure"]
+```
+
+The skill carries these as a flat list indexed by situation rather than by rule, because the decision arrives while you are writing code and thinking "this error is ugly", not "rule 2".
+
 ## Install
 
 Both skills are plain [Agent Skills](https://agentskills.io), so they work in any compatible agent.
