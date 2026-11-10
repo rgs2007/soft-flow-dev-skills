@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "soft-flow",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Skills that make coding agents fluent in the way you review code. Includes Diffluent: explains a pull request as business-rule pseudocode, then reviews it through three lenses.",
   "author": {
     "name": "rgs2007",

@@ -5,13 +5,13 @@ description: How to write code. Avoid avoidable complexity, hide unavoidable com
 
 # Plainflow
 
-Three rules, in priority order:
+Three rules:
 
 1. **Avoidable complexity is avoided.**
 2. **Unavoidable complexity is hidden** behind a simple interface.
 3. **Behaviour is explicit** and traceable through logs, in any environment.
 
-The order matters because rules 1 and 3 pull against each other: a log line is code, so logging everything is avoidable complexity. Rule 3 resolves it.
+They pull against each other in four places. Each reconciliation is stated where it arises rather than added as another rule. The first: a log line is code, so logging everything is itself avoidable complexity — rule 3 resolves that by naming exactly two things to log.
 
 ## 1. Avoid avoidable complexity
 
@@ -37,8 +37,8 @@ Never cut these. They are not complexity, they are the work:
 When complexity is essential, decide who carries it: this module, or every caller forever. Carry it here.
 
 - The functionality is the benefit; the interface is the cost. Keep the interface narrower than the implementation, and judge a module by that ratio rather than by its length.
-- Each module keeps one secret: a format, a protocol, a schema, an algorithm, a vendor quirk. If a caller must know the secret to use the module, it has leaked.
-- A caller should not have to call three things in a fixed order, pass flags that only mean something internally, or handle errors that only mean something internally.
+- Each module keeps one secret: a format, a protocol, a schema, an algorithm, a vendor quirk. If a caller must know the secret to use the module, it has leaked. Secrets that always change together are one secret; splitting them adds a seam with no change running through it.
+- A caller should not have to call three things in a fixed order, pass flags that only mean something internally, or handle errors that only mean something internally. Translate those errors into an outcome the caller can act on — never swallow them to keep the interface clean. Rule 1 does not let you drop the failure path, and rule 3 still requires it in the logs.
 - Place the seam where change is likely, not at the steps of the process. Rule 1 decides whether to build the machinery at all; this decides where its seams go. Declining to anticipate a feature is not the same as putting a boundary in the wrong place.
 - State the contract at the boundary: what it requires, what it guarantees, what it does on failure. Write the why, not the what.
 
@@ -55,7 +55,7 @@ Traceable: **log the rules, not the plumbing.** If you wrote this unit out as on
 Log two things, and nothing else:
 
 - **One event per unit of work**, emitted at its boundary, carrying the outcome and the values that drove each decision as fields. One event, not one per decision: a decision is a field on that event, never a line of its own.
-- **Every failure**, including every error returned by something you called, with enough context to act on. This is the highest-value category — in field studies, failures that logged an error were diagnosed far faster than those that logged nothing.
+- **Every failure**, including every error returned by something you called, with enough context to act on. Log it where it is first detected, and do not log it again as it propagates upward. This is the highest-value category — in field studies, failures that logged an error were diagnosed far faster than those that logged nothing.
 
 Never log loop iterations, getters, "entering function", anything already carried on that event, or secrets, credentials, tokens and personal data. Decide the last one as you write the line, not in review.
 
