@@ -11,7 +11,7 @@ Three rules:
 2. **Unavoidable complexity is hidden** behind a simple interface.
 3. **Behaviour is explicit** and traceable through logs, in any environment.
 
-They pull against each other in four places. Each reconciliation is stated where it arises rather than added as another rule. The first: a log line is code, so logging everything is itself avoidable complexity — rule 3 resolves that by naming exactly two things to log.
+They conflict in four places, each reconciled below where it arises — usually by a third option rather than by one rule beating another. Where they conflict somewhere not covered here, prefer the option that costs you and saves the next reader, and never trade away a failure someone can diagnose.
 
 ## 1. Avoid avoidable complexity
 
@@ -52,7 +52,7 @@ Explicit:
 
 Traceable: **log the rules, not the plumbing.** If you wrote this unit out as one-line business rules, each rule belongs in the logs and none of the plumbing does.
 
-Log two things, and nothing else:
+Log two things, and nothing else — a log line is code, and logging everything is the avoidable complexity rule 1 exists to prevent:
 
 - **One event per unit of work**, emitted at its boundary, carrying the outcome and the values that drove each decision as fields. One event, not one per decision: a decision is a field on that event, never a line of its own.
 - **Every failure**, including every error returned by something you called, with enough context to act on. Log it where it is first detected, and do not log it again as it propagates upward. This is the highest-value category — in field studies, failures that logged an error were diagnosed far faster than those that logged nothing.
