@@ -11,7 +11,7 @@ Three rules:
 2. **Unavoidable complexity is hidden** behind a simple interface.
 3. **Behaviour is explicit** and traceable through logs, in any environment.
 
-They conflict in four places, each reconciled below where it arises — usually by a third option rather than by one rule beating another. Where they conflict somewhere not covered here, prefer the option that costs you and saves the next reader, and never trade away a failure someone can diagnose.
+They conflict in four places. "When the rules collide" at the end resolves those by situation, usually with a third option rather than one rule beating another.
 
 ## 1. Avoid avoidable complexity
 
@@ -37,8 +37,8 @@ Never cut these. They are not complexity, they are the work:
 When complexity is essential, decide who carries it: this module, or every caller forever. Carry it here.
 
 - The functionality is the benefit; the interface is the cost. Keep the interface narrower than the implementation, and judge a module by that ratio rather than by its length.
-- Each module keeps one secret: a format, a protocol, a schema, an algorithm, a vendor quirk. If a caller must know the secret to use the module, it has leaked. Secrets that always change together are one secret; splitting them adds a seam with no change running through it.
-- A caller should not have to call three things in a fixed order, pass flags that only mean something internally, or handle errors that only mean something internally. Translate those errors into an outcome the caller can act on — never swallow them to keep the interface clean. Rule 1 does not let you drop the failure path, and rule 3 still requires it in the logs.
+- Each module keeps one secret: a format, a protocol, a schema, an algorithm, a vendor quirk. If a caller must know the secret to use the module, it has leaked.
+- A caller should not have to call three things in a fixed order, pass flags that only mean something internally, or handle errors that only mean something internally — translate, never swallow.
 - Place the seam where change is likely, not at the steps of the process. Rule 1 decides whether to build the machinery at all; this decides where its seams go. Declining to anticipate a feature is not the same as putting a boundary in the wrong place.
 - State the contract at the boundary: what it requires, what it guarantees, what it does on failure. Write the why, not the what.
 
@@ -54,14 +54,28 @@ Traceable: **log the rules, not the plumbing.** If you wrote this unit out as on
 
 Log two things, and nothing else — a log line is code, and logging everything is the avoidable complexity rule 1 exists to prevent:
 
-- **One event per unit of work**, emitted at its boundary, carrying the outcome and the values that drove each decision as fields. One event, not one per decision: a decision is a field on that event, never a line of its own.
-- **Every failure**, including every error returned by something you called, with enough context to act on. Log it where it is first detected, and do not log it again as it propagates upward. This is the highest-value category — in field studies, failures that logged an error were diagnosed far faster than those that logged nothing.
+- **One event per unit of work**, emitted at its boundary, carrying the outcome and the values that drove each decision as fields.
+- **Every failure**, including every error returned by something you called, with enough context to act on. This is the highest-value category — in field studies, failures that logged an error were diagnosed far faster than those that logged nothing.
 
 Never log loop iterations, getters, "entering function", anything already carried on that event, or secrets, credentials, tokens and personal data. Decide the last one as you write the line, not in review.
 
 To work in any environment: structured key-value fields rather than interpolated prose; one stable event name with what varies as fields (`payment.failed` with `reason=...`, not a message per reason); the request or trace identifier, so one unit of work can be followed across services; and this repository's existing field names and levels, or OpenTelemetry semantic conventions for new ones.
 
 A log that no longer matches the code is worse than no log. Change a rule, change its log line in the same edit.
+
+## When the rules collide
+
+Each line is a situation you will be in, and what to do. Not extra rules — these are the four places the three rules pull against each other.
+
+**An error only means something inside this module** → translate it into an outcome the caller can act on. Never swallow it to keep the interface clean, and still log it.
+
+**One unit of work makes five decisions worth recording** → one event, five fields. Not five log lines.
+
+**An error crosses several layers** → log it once, where it is first detected. Do not log it again as it rises.
+
+**Two secrets always change together** → they are one secret. Keep them in one module; a seam there has no change running through it.
+
+**Anything else** → prefer the option that costs you and saves the next reader. Never trade away a failure someone can diagnose.
 
 ## Before you finish
 
