@@ -22,13 +22,27 @@ Never write to GitHub: no comments, reviews, approvals, labels, or pushes. This 
 
 If a capability is missing, do not substitute memory for it. Say what you could not reach in Limitations and lower confidence.
 
+## Linking
+
+Make every `file:line` a markdown link, so any mention can be opened and quoted straight from the output.
+
+Link to a commit, never to a branch, so the link still points at the right line after later pushes:
+
+`https://github.com/OWNER/REPO/blob/COMMIT_SHA/PATH#L42` (range: `#L42-L47`)
+
+- Use the head commit SHA for anything in the current code, and the base commit SHA for a "before" rule or for removed code.
+- Get both from your pull-request tools, from `gh pr view --json headRefOid,baseRefOid`, or from `git rev-parse HEAD` and `git merge-base`.
+- Keep labels short: `L42` inside a table whose heading already names the file, `file.cs:42` everywhere else.
+
+If you cannot determine the owner, repo, or commit SHA — a local branch with no PR, or a host that is not GitHub — write plain `path:line` with no link. Never guess a URL or invent a SHA.
+
 ## Rules
 
 - Raise a concern only if it has a concrete, realistic impact on users, operations, security, or compliance. If you are unsure whether it matters, leave it out.
 - Judge requirements by intent, not wording. Terminology and interpretation differences are not concerns.
 - Blocking means it should not merge as is: unmet requirement, bug, regression, design flaw, or security problem. Minor issues are not reported at all.
 - Do not raise issues that existed before this PR unless the PR makes them worse.
-- Every finding needs `file:line`. Before reporting it, re-read the code to confirm it and say how you verified it.
+- Every finding needs a linked `file:line` (see Linking). Before reporting it, re-read the code to confirm it and say how you verified it.
 - Never state library or language behaviour from memory when it decides a finding. Check it, or report it as unverified.
 
 ## The three lenses
@@ -80,16 +94,16 @@ Omit any section that would be empty, except Verdict and Limitations.
 
 | Requirement | Status | Evidence |
 |---|---|---|
-| short name | Partial / Missing | `file:line` or "no matching change" |
+| short name | Partial / Missing | [file.cs:42](url) or "no matching change" |
 
 **Blocking concerns** (max 5, most severe first)
-1. **Short title** · `file:line` · Rules / Contracts / Structure
+1. **Short title** · [file.cs:42](url) · Rules / Contracts / Structure
    - Impact: one sentence.
    - Verified by: what you re-read or which documentation page (link).
    - Already raised: only if yes, and whether it is unresolved.
    - Suggested comment: gentle, collaborative, phrased as a question, for example "My read of the PBI is X, but here I'm seeing Y. Do we need to Z?" The question form is tone only; the concern behind it must be real.
 
-**Unrequested changes** (max 3): change, `file:line`, and whether it carries risk.
+**Unrequested changes** (max 3): change, linked `file:line`, and whether it carries risk.
 
 **Unverified assumptions** (max 3): a library or language behaviour the change depends on that would be blocking if wrong and that you could not confirm. Say what would confirm it.
 

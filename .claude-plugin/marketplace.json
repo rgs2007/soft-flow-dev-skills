@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "soft-flow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "metadata": {
     "description": "Skills that make coding agents fluent in the way you review code."
   },
   "plugins": [
     {
       "name": "soft-flow",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "source": "./",
       "description": "Diffluent: explain a pull request as business-rule pseudocode, then review it through three lenses."
     }

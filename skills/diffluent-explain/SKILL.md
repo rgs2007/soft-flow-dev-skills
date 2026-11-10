@@ -20,11 +20,25 @@ Never write to GitHub: no comments, reviews, approvals, labels, or pushes. This 
 
 If something is unreachable, never substitute memory for it. Name it in the last line.
 
+## Linking
+
+Make every `file:line` a markdown link, so any mention can be opened and quoted straight from the output.
+
+Link to a commit, never to a branch, so the link still points at the right line after later pushes:
+
+`https://github.com/OWNER/REPO/blob/COMMIT_SHA/PATH#L42` (range: `#L42-L47`)
+
+- Use the head commit SHA for anything in the current code, and the base commit SHA for a "before" rule or for removed code.
+- Get both from your pull-request tools, from `gh pr view --json headRefOid,baseRefOid`, or from `git rev-parse HEAD` and `git merge-base`.
+- Keep labels short: `L42` inside a table whose heading already names the file, `file.cs:42` everywhere else.
+
+If you cannot determine the owner, repo, or commit SHA — a local branch with no PR, or a host that is not GitHub — write plain `path:line` with no link. Never guess a URL or invent a SHA.
+
 ## Rules
 
 - Code first, description last. Write everything from the code before reading the PR description or work item. Reading them first makes you describe what was intended instead of what the code does.
 - Exact values and operators. `>` and `>=` are different rules. Never round or paraphrase thresholds, limits, status values, or error codes.
-- Every line carries `file:line`.
+- Every line carries a linked `file:line` (see Linking).
 - Never fill a gap with an assumption.
 
 ## Steps
@@ -54,10 +68,10 @@ Example: `If order total >= 500, require manager approval [OrderService.cs:42]`
 
 Omit any section that would be empty, except the first and the last line.
 
-**What this PR does:** two or three sentences, plain language.
+**What this PR does:** two or three sentences, plain language, ending with a link to the PR.
 
 **Behaviour changes** (max 7, most significant first)
-1. Before: X. After: Y. `file:line`
+1. Before: X. After: Y. [OrderService.cs:42](url)
 
 If behaviour does not change, say so in one line and skip the next section.
 
@@ -67,14 +81,14 @@ If behaviour does not change, say so in one line and skip the next section.
 
 | | Before | After |
 |---|---|---|
-| Changed | rule [line] | rule [line] |
-| Added | | rule [line] |
-| Removed | rule [line] | |
+| Changed | rule ([L42](base-url)) | rule ([L44](head-url)) |
+| Added | | rule ([L51](head-url)) |
+| Removed | rule ([L38](base-url)) | |
 
 Unchanged rules are not listed. Add one only when a neighbouring change cannot be understood without it.
 
 **Technical changes** (max 5, one line each, facts only)
-- Replaced calls or language constructs: `old` → `new` `file:line`
+- Replaced calls or language constructs: `old` → `new` [file.cs:42](url)
 - New, removed or upgraded dependencies, with versions
 - Structural changes: code moved between modules, new public endpoints or types, changed signatures, schema or contract changes
 - Tests: added, removed, skipped, or asserting less than before
@@ -83,7 +97,7 @@ Unchanged rules are not listed. Add one only when a neighbouring change cannot b
 - Claimed but not found in the code:
 - Changed but not mentioned:
 
-**Read these closely** (max 5): `file:line` and a few words on why. Choose the places where pseudocode is least able to stand in for the code: boundary conditions, error handling, concurrency, money or date arithmetic, security checks.
+**Read these closely** (max 5): a linked `file:line` and a few words on why. Choose the places where pseudocode is least able to stand in for the code: boundary conditions, error handling, concurrency, money or date arithmetic, security checks.
 
 **Not covered:** one line naming what was skipped, not fetched, or only skimmed, and what you can expand on request (for example "ask for the full comparison of the 4 remaining units").
 
