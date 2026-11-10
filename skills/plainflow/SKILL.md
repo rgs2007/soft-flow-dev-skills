@@ -11,7 +11,7 @@ Three rules:
 2. **Unavoidable complexity is hidden** behind a simple interface.
 3. **Behaviour is explicit** and traceable through logs, in any environment.
 
-They conflict in four places. "When the rules collide" at the end resolves those by situation, usually with a third option rather than one rule beating another.
+Where they conflict, "When the rules collide" at the end resolves it by situation, usually with a third option rather than one rule beating another.
 
 ## 1. Avoid avoidable complexity
 
@@ -39,7 +39,7 @@ When complexity is essential, decide who carries it: this module, or every calle
 - The functionality is the benefit; the interface is the cost. Keep the interface narrower than the implementation, and judge a module by that ratio rather than by its length.
 - Each module keeps one secret: a format, a protocol, a schema, an algorithm, a vendor quirk. If a caller must know the secret to use the module, it has leaked.
 - A caller should not have to call three things in a fixed order, pass flags that only mean something internally, or handle errors that only mean something internally — translate, never swallow.
-- Place the seam where change is likely, not at the steps of the process. Rule 1 decides whether to build the machinery at all; this decides where its seams go. Declining to anticipate a feature is not the same as putting a boundary in the wrong place.
+- Place the seam where change is likely, not at the steps of the process.
 - State the contract at the boundary: what it requires, what it guarantees, what it does on failure. Write the why, not the what.
 
 ## 3. Make behaviour explicit and traceable
@@ -74,6 +74,12 @@ Each line is a situation you will be in, and what to do. Not extra rules — the
 **An error crosses several layers** → log it once, where it is first detected. Do not log it again as it rises.
 
 **Two secrets always change together** → they are one secret. Keep them in one module; a seam there has no change running through it.
+
+**A unit of work fails** → the failure line carries the vendor or exception detail, at the layer that can still see it. The event carries the business outcome. No field on both.
+
+**A field would help diagnosis but describes a person** → opaque internal identifiers go in. Request bodies, credentials, contact details and the names of people stay out.
+
+**You could put an interface over the one implementation you have** → do not. Rule 1 decides whether the machinery exists at all; rule 2 only decides where its seams go. Declining to anticipate a feature is not the same as placing a boundary badly.
 
 **Anything else** → prefer the option that costs you and saves the next reader. Never trade away a failure someone can diagnose.
 
