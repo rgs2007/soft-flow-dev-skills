@@ -2,9 +2,9 @@
 
 Skills that make coding agents fluent in the way you work.
 
-The first pair is **Diffluent**: it reads a diff the way a careful colleague would — first explaining what changed, then judging whether it should merge.
+**Diffluent** reads a diff the way a careful colleague would: first explaining what changed, then judging whether it should merge. **Plainflow** covers the other half of the job — writing the code in the first place.
 
-## The two skills
+## Diffluent — reviewing
 
 **`diffluent-explain`** — what changed, no opinion.
 
@@ -33,6 +33,16 @@ Every blocking concern is tagged with the lens that found it and a line saying h
 - **Precision over coverage.** One wrong concern costs more trust than a missed minor one, so unsure findings are dropped rather than hedged.
 - **Short by design.** Hard caps on every list, and empty sections are omitted. A clean review is three lines.
 - **Read-only, always.** Neither skill posts, approves, or pushes anything — even when running with write access on the PR itself.
+
+## Plainflow — writing
+
+**`plainflow`** — three rules, in priority order.
+
+1. **Avoidable complexity is avoided.** No abstraction for a need that does not exist yet, no flag nobody sets, no reimplementation of what the repo already has. But error handling, boundary cases and validation are never "complexity" to be cut — they are the work.
+2. **Unavoidable complexity is hidden.** When complexity is essential, this module carries it rather than every caller forever. The interface stays narrower than the implementation.
+3. **Behaviour is explicit and traceable.** Outcomes are returned, not signalled through shared state; decisions are named; and structured logs make the behaviour visible in any environment, with no debugger and no reproduction.
+
+Rules 1 and 3 pull against each other — a log line is code, and logging everything is avoidable complexity. The skill resolves it with one test: **log the rules, not the plumbing.** The lines you would write as business rules in a `diffluent-explain` comparison are exactly the lines worth logging.
 
 ## Install
 
